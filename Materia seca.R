@@ -1,4 +1,6 @@
 library(dplyr)
+library(readxl)
+cuadros2 <- read_excel("Tesis Diseños/Cuadros tipeados (1).xlsx", sheet = "Cuadro 2")
 cuadros2 %>% attach()
 
 cuadros2 %>% select(2:9) -> datos_materia 
@@ -7,7 +9,7 @@ datos_materia %>% glimpse()
 datos_materia
 names(datos_materia)
 datos_materia %>% rename( MS_T = MS...5 , MS_G =MS...6, MS_B = MS...7, MS_J = MS...8,
-                  MS_RI = MS...9, Variedades = ...4, niveles = ...3, repeticion = ...2) -> datos_materia
+                          MS_RI = MS...9, Variedades = ...4, niveles = ...3, repeticion = ...2) -> datos_materia
 datos_materia
 datos_materia$MS_T <- as.numeric(datos_materia$MS_T)
 datos_materia$MS_G <- as.numeric(datos_materia$MS_G)
@@ -15,6 +17,10 @@ datos_materia$MS_B <- as.numeric(datos_materia$MS_B)
 datos_materia$MS_J <- as.numeric(datos_materia$MS_J)
 datos_materia$MS_RI <- as.numeric(datos_materia$MS_RI)
 glimpse(datos_materia)
+head(datos_materia)
+summary(datos_materia)
+
+
 
 
 # Materia Seca Total------------------------------------------------------------
@@ -84,16 +90,30 @@ glimpse(datos_materia)
 #y muestra un gráfico de su disposición (GRAFICO 03). Se identificaron como Bloque I,
 #Bloque II, Bloque III y Bloque IV en el gráfico
 
-
+### ISAAC
 library(agricolae)
-modelo <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_G))
+modelo_MSB <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_B))
+modelo_MSG <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_G))
+modelo_MST <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_T))
+# Response: MS_T
+#                      Df    Sum Sq  Mean Sq  F value    Pr(>F)    
+# repeticion           3  28932269  9644090  45.7505 4.422e-10 ***
+#   niveles            3 179521622 59840541 132.2828 9.231e-08 ***
+#   Ea                 9   4071315   452368                       
+# Variedades           2  29209055 14604528  69.2822 1.072e-10 ***
+#  niveles:Variedades  6   3989213   664869   3.1541   0.02002 *  
+#   Eb                 24   5059143   210798                       
 
+
+modelo_AOV_MST <- aov(valores ~ niveles * Variedades + Error(repeticion/Variedades), data = datos_materia)
+summary(modelo_AOV_MST)
+#### LO DE ABAJO NO HE TOCADO
 
 
 modelo <- aov(MS_G ~ niveles * Variedades + Error(repeticion/Variedades), data = datos_materia)
 summary(modelo)
 
-  glimpse(datos_materia)
+glimpse(datos_materia)
 modelo_aov %>% summary
 
 modelo_aov$Within$residuals %>% shapiro.test()
