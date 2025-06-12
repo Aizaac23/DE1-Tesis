@@ -90,50 +90,88 @@ summary(datos_materia)
 #y muestra un gráfico de su disposición (GRAFICO 03). Se identificaron como Bloque I,
 #Bloque II, Bloque III y Bloque IV en el gráfico
 
-### ISAAC
+
+# MATERIA SECA ------------------------------------------------------------
+
+
 library(agricolae)
 modelo_MSB <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_B))
 modelo_MSG <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_G))
 modelo_MST <- with(datos_materia,sp.plot(repeticion,niveles,Variedades,MS_T))
-# Response: MS_T
-#                      Df    Sum Sq  Mean Sq  F value    Pr(>F)    
-# repeticion           3  28932269  9644090  45.7505 4.422e-10 ***
-#   niveles            3 179521622 59840541 132.2828 9.231e-08 ***
-#   Ea                 9   4071315   452368                       
-# Variedades           2  29209055 14604528  69.2822 1.072e-10 ***
-#  niveles:Variedades  6   3989213   664869   3.1541   0.02002 *  
-#   Eb                 24   5059143   210798                       
+modelo_MSJ <- with(datos_materia,sp.plot(repeticion, niveles,Variedades, MS_J))
+
+# Usaremos aov para extraer los residuos
 
 
-modelo_AOV_MST <- aov(valores ~ niveles * Variedades + Error(repeticion/Variedades), data = datos_materia)
-summary(modelo_AOV_MST)
-#### LO DE ABAJO NO HE TOCADO
+# NORMALIDAD --------------------------------------------------------------
 
 
-modelo <- aov(MS_G ~ niveles * Variedades + Error(repeticion/Variedades), data = datos_materia)
-summary(modelo)
-
-glimpse(datos_materia)
-modelo_aov %>% summary
-
-modelo_aov$Within$residuals %>% shapiro.test()
-# NO CUMPLE NORMALIDAD DE LAS VARIEDADES
+# MATERIA SECA TOTAL ------------------------------------------------------
 
 
-# Usaremos un modelo con permutación  -------------------------------------
+mod_MSTaov = aov(MS_T ~ repeticion + Variedades + Error(repeticion/Variedades) +
+                   niveles + Variedades:niveles, datos_materia)
+mod_MSTaov %>% summary
+mod_MSTaov$Within %>% residuals() %>% shapiro.test()
 
-library(lmPerm)
-modelo_perm<- lmp(MS_G~ repeticion + Variedades + niveles + 
-                    Variedades:niveles, datos_materia)
-modelo_perm %>% anova
 
-library(permuco)
+# MATERIA SECA CON GRANO --------------------------------------------------
 
-modelo_perm <- aovperm(MS_G ~ repeticion + Variedades*niveles + Error(repeticion/Variedades), 
-                       data = datos_materia)
+mod_MSGaov = aov(MS_G ~ repeticion + Variedades + Error(repeticion/Variedades) +
+                   niveles + Variedades:niveles, datos_materia)
+mod_MSGaov$Within %>% residuals() %>% shapiro.test()
 
-modelo_perm %>% anova
-library(psych)
-(medias  = describeBy(datos_materia$MS_G, datos_materia$Variedades))
 
+# MATERIA SECA BROZA ------------------------------------------------------
+
+mod_MSBaov = aov(MS_B ~ repeticion + Variedades + Error(repeticion/Variedades) +
+                   niveles + Variedades:niveles, datos_materia)
+mod_MSBaov$Within %>% residuals() %>% shapiro.test()
+
+
+# MATERIA SECA JIPI -------------------------------------------------------
+
+mod_MSJaov = aov(MS_J ~ repeticion + Variedades + Error(repeticion/Variedades) +
+                   niveles + Variedades:niveles, datos_materia)
+mod_MSJaov$Within %>% residuals() %>% shapiro.test()
+
+# MATERIA SECA RAÍZ -------------------------------------------------------
+
+mod_MSRIaov = aov(MS_RI ~ repeticion + Variedades + Error(repeticion/Variedades) +
+                   niveles + Variedades:niveles, datos_materia)
+mod_MSRIaov$Within %>% residuals() %>% shapiro.test()
+
+
+# HOMOGENEIDAD ------------------------------------------------------------
+plot(fitted(mod_MSTaov$Within), residuals(mod_MSTaov$Within),
+     xlab = "Valores ajustados", ylab = "Residuos")
+
+plot(fitted(mod_MSJaov$Within), residuals(mod_MSJaov$Within),
+     xlab = "Valores ajustados", ylab = "Residuos")
+
+plot(fitted(mod_MSGaov$Within), residuals(mod_MSGaov$Within),
+     xlab = "Valores ajustados", ylab = "Residuos")
+
+plot(fitted(mod_MSBaov$Within), residuals(mod_MSBaov$Within),
+     xlab = "Valores ajustados", ylab = "Residuos")
+
+plot(fitted(mod_MSRIaov$Within), residuals(mod_MSRIaov$Within),
+     xlab = "Valores ajustados", ylab = "Residuos")
+
+library(lmtest)
+
+bptest(mod_MSTaov$Within %>% residuals() ~ fitted(mod_MSTaov$Within), data = datos_materia)
+
+bptest(mod_MSGaov$Within %>% residuals() ~ fitted(mod_MSGaov$Within), data = datos_materia)
+
+bptest(mod_MSJaov$Within %>% residuals() ~ fitted(mod_MSJaov$Within), data = datos_materia)
+
+bptest(mod_MSBaov$Within %>% residuals() ~ fitted(mod_MSBaov$Within), data = datos_materia)
+
+bptest(mod_MSRIaov$Within %>% residuals() ~ fitted(mod_MSRIaov$Within), data = datos_materia)
+
+
+# PRUEBAS DE COMPARACION --------------------------------------------------
+
+library(agricolae)
 
