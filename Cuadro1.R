@@ -1,0 +1,29 @@
+library(dplyr)
+library(readxl)
+cuadros1 <- read_excel("Tesis Diseños/Cuadros tipeados (1).xlsx", sheet =1)
+cuadros1 %>% attach()
+
+cuadros1 %>% select(2:10) -> datos_cuadro1 
+datos_cuadro1$DP = c(2.8, 2.8, 3.8, 3.0, 2.4, 2.7, 4.0, 3.0, 3.0, 2.4,
+                           4.0, 3.0, 3.3, 3.2, 4.2, 4.0, 3.3, 3.5, 4.2, 4.0,
+                           3.3, 3.0, 4.2, 3.5, 3.6, 3.5, 4.5, 4.0, 4.3, 4.0,
+                           4.0, 5.0, 3.5, 3.5, 4.5, 4.0, 4.6, 3.5, 5.0, 4.5,
+                           5.3, 4.2, 5.0, 4.8, 4.5, 3.5, 5.0, 3.9)
+
+datos_cuadro1 %>% glimpse()
+datos_cuadro1
+names(datos_cuadro1)
+
+glimpse(datos_cuadro1)
+head(datos_cuadro1)
+summary(datos_cuadro1)
+
+
+library(agricolae)
+modelo_c1_grano <- with(datos_cuadro1,sp.plot(R,D,V,GRANO)) 
+modelo_c1_jipi <- with(datos_cuadro1,sp.plot(R,D,V,JIPI))
+modelo_c1_broza <- with(datos_cuadro1,sp.plot(R,D,V,BROZA))
+modelo_c1_DP <- with(datos_cuadro1,sp.plot(R,D,V,DP)) # EDITAR LOS DATOS
+modelo_c1_AP <- with(datos_cuadro1,sp.plot(R,D,V,AP)) # IGUALITO
+modelo_c1_LP <- with(datos_cuadro1,sp.plot(R,D,V,LP))
+
