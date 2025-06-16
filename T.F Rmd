@@ -1,0 +1,101 @@
+---
+title: "Absorción de Nutrientes por Tres Variedades de Quinua
+bajo Cuatro Niveles de Fertilidad en 
+Mollisol del Altiplano de Puno "
+author: "Grupo 5"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+site: bookdown::bookdown_site
+output:
+  bookdown::gitbook:  
+    number_sections: true 
+    split_by: "none" 
+    fig_caption: true 
+    highlight: "tango" 
+    code_folding: show 
+    toc_depth: 2 
+    self_contained: true 
+  bookdown::pdf_book:
+    latex_engine: xelatex 
+    keep_tex: true 
+  bookdown::epub_book: default 
+description: |
+  Este documento tiene como objetivo aplicar un diseño experimental y reforzar la tesis mencionada
+lang: es 
+fontsize: 12pt 
+geometry: a4paper 
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# <span style = "color:lightbrown" > **INTRODUCCIÓN** </span>
+
+## **Contexto de estudio**
+
+Ubicación y Período: El experimento se realizó en un suelo Haplustoll fluventic del altiplano de Puno, Perú, específicamente en la Estación Experimental Salcedo. Se llevó a cabo durante la campaña agrícola de 1984-1985, cubriendo los meses de octubre a abril.
+
+
+## **Problema abordado**
+
+La región del altiplano peruano, particularmente el departamento de Puno, es de gran importancia agrícola, con cultivos adaptados a su variabilidad climática y de suelos, como la papa y la quinua. Sin embargo, la agricultura tradicional ha implicado una continua extracción de nutrientes del suelo sin una tecnología adecuada para restablecer su fertilidad, lo que provoca un empobrecimiento gradual. Aunque tradicionalmente el cultivo de quinua no se fertilizaba (se ubicaba después de la papa abonada), el deseo de incrementar su productividad ha llevado a recurrir a la fertilización química. Surge la necesidad de cuantificar los requerimientos nutricionales y la extracción de elementos minerales por este cultivo. Hasta la fecha del estudio, no se contaba con investigaciones sobre la acumulación de nutrientes minerales por la quinua, aunque existía conocimiento sobre su respuesta a dosis y fuentes de fertilización NPK.
+
+
+# **OBJETIVOS**
+
+- Determinar la absorción de nutrientes (N, P, K, Ca, Mg, Na, Fe, Cu, Mn, y Zn) por tres variedades de quinua bajo cuatro niveles de fertilidad.
+
+- Evaluar la distribución de materia seca y nutrientes minerales en los tejidos vegetales durante el período vegetativo de la quinua.
+
+- Determinar la relación entre el rendimiento de materia seca y la extracción de nutrientes.
+
+# **DISEÑO EXPERIMENTAL**
+
+El diseño experimental empleado fue el de Bloques Completos al Azar con cuatro repeticiones. Dentro de cada bloque, los tratamientos fueron dispuestos en un diseño de tratamientos de parcelas divididas.
+
+**Parcelas Principales:** Constituidas por los niveles de fertilidad del suelo. Se aplicaron cuatro tratamientos de fertilización NPK:
+
+- D1: 00-00-00 kg/Ha de N-P₂O₅-K₂O
+
+- D2: 60-40-30 kg/Ha de N-P₂O₅-K₂O
+
+- D3: 90-60-45 kg/Ha de N-P₂O₅-K₂O
+
+- D4: 120-80-60 kg/Ha de N-P₂O₅-K₂O
+
+**Subparcelas (Subplots):** Constituidas por las variedades de quinua. Se estudiaron tres variedades:
+
+- 'Sajama' (precoz y dulce)
+
+- 'Blanca de Juli' (semitardía y semiprecoz)
+
+- 'Tahuaco' (semitardía y semiprecoz)
+
+El número total de unidades experimentales (subparcelas) fue de 4 repeticiones * 4 niveles de fertilidad * 3 variedades = 48 unidades experimentales
+
+
+**Variables de Estudio (Mediciones):**El estudio evaluó diversas variables para entender la respuesta de las variedades de quinua a los niveles de fertilidad. Estas se pueden clasificar en factores (tus variables independientes o tratamientos) y variables de respuesta (las variables medidas).
+
+**Factores (Variables Independientes):** 
+
+- Nivel de fertilidad (factor de parcela principal con 4 niveles).
+
+- Variedad de quinua (factor de subparcela con 3 niveles).
+
+**Variables de Respuesta (Variables Dependientes):**
+
+- Rendimiento y Componentes: Se registraron a la cosecha.
+
+- Rendimiento de grano (kg/ha).
+
+- Rendimiento de broza (kg/ha). La broza se compone de tallos y parte de la panoja.
+
+- Rendimiento de "jipi" (kg/ha). El "jipi" se compone del perigonio del fruto y partes menudas de tallos, hojas y panojas.
+
+- Rendimiento total de materia seca (kg/ha).
