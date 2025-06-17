@@ -174,4 +174,50 @@ bptest(mod_MSRIaov$Within %>% residuals() ~ fitted(mod_MSRIaov$Within), data = d
 # PRUEBAS DE COMPARACION --------------------------------------------------
 
 library(agricolae)
+resumen <- summary(mod_MSTaov)
 
+# =======================
+# === 1. Parcela grande (Variedades)
+# =======================
+tabla_grande <- resumen[["Error: repeticion:Variedades"]][[1]]
+
+(dfa <- tabla_grande["Residuals", "Df"])
+(Ea  <- tabla_grande["Residuals", "Mean Sq"])
+
+
+# =======================
+# === 2. Subparcelas (niveles y Variedades:niveles)
+# =======================
+tabla_within <- resumen[["Error: Within"]][[1]]
+
+(dfb <- tabla_within["Residuals", "Df"])
+(Eb  <- tabla_within["Residuals", "Mean Sq"])
+
+# =======================
+# === 3. Niveles de factores
+# =======================
+(a <- nlevels(datos_materia$Variedades))
+(b <- nlevels(datos_materia$niveles))
+(r <- nlevels(datos_materia$repeticion))
+
+# =======================
+# === 4. Error combinado y gl ajustado (Satterthwaite)
+# =======================
+
+#Aproximación 
+(Eab <- (Ea + (b - 1) * Eb) / (b * r))
+(dfab <- (Ea + (b - 1) * Eb)^2 / ((Ea^2 / dfa) + (((b - 1)^2) * Eb^2 / dfb)))
+
+# =======================
+# === 5. Comparaciones HSD
+# =======================
+
+# Variedades (parcela grande)
+(comparacion_variedades <- HSD.test(y = datos_materia$MS_T, trt = datos_materia$Variedades,
+                                   DFerror = dfa, MSerror = Ea, alpha = 0.05, console = T) %>% plot)
+
+
+# Niveles (subparcela)
+comparacion_niveles <- HSD.test(y = datos_materia$MS_T,
+                                trt = datos_materia$niveles,
+                                DFerror = dfb, MSerror = Eb, alpha = 0.05, console = T) %>% plot
