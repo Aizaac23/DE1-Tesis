@@ -1,8 +1,11 @@
 ---
 title: "Análisis ANOVA de Nutrientes"
-author: "Usuario"
+author: "Grupo 2"
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
-output: html_document
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -38,92 +41,8 @@ datos <- cuadro3[5:nrow(cuadro3), c(2,3,4,5,9,13,17,21,25)] %>%
   )
 ```
 
-## 2. Ajuste de modelos ANOVA 
 
-```{r models}
-mod_Mg <- aov(Mg ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Mg)
-```
-- **Magnesio (Mg)**  
-  - Estrato parcela: bloque significativo (F = 16.21, p = 0.000568) y niveles de fertilidad significativos (F = 69.70, p < 0.001).  
-  - Estrato subparcelas: variedad significativo (F = 129.53, p < 0.001) e interacción variedades:niveles significativa (F = 4.41, p = 0.0039).  
-  Esto indica que los niveles de fertilidad y la variedad afectan la absorción de Mg, y que cada variedad responde de forma distinta a los niveles.
-```{r models2}
-mod_Na <- aov(Na ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Na)
-```
-- **Sodio (Na)**  
-  - Bloque (F = 19.55, p = 0.000279) y niveles (F = 266.64, p < 0.001) altamente significativos.  
-  - Variedades (F = 148.80, p < 0.001) e interacción (F = 29.50, p < 0.001).  
-  La jerarquía de absorción es Tahuaco > Blanca de Juli > Sajama, y la respuesta a la fertilización varía según la variedad.
-
-```{r models3}
-mod_Fe <- aov(Fe ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Fe)
-```
-- **Hierro (Fe)**  
-  - Bloque (F = 23.57, p = 0.000134) y niveles (F = 198.76, p < 0.001) significativos.  
-  - Variedades no significativo (F = 0.61, p = 0.554), pero interacción significativa (F = 3.40, p = 0.0142).  
-  Aunque en promedio no hay diferencias entre variedades, cada variedad muestra un patrón distinto de respuesta a los niveles.
-
-```{r models4}
-mod_Cu <- aov(Cu ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Cu)
-```
-- **Cobre (Cu)**  
-  - Bloque (F = 21.55, p = 0.000191) y niveles (F = 141.22, p < 0.001) significativos.  
-  - Variedades (F = 92.96, p < 0.001) e interacción (F = 4.15, p = 0.0053).  
-
-```{r models5}
-mod_Mn <- aov(Mn ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Mn)
-```
-- **Manganeso (Mn)**  
-  - Bloque (F = 20.61, p = 0.000227) y niveles (F = 175.62, p < 0.001) significativos.  
-  - Variedades (F = 225.60, p < 0.001) e interacción (F = 11.10, p < 0.001).
-
-```{r models6}
-mod_Zn <- aov(Zn ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
-summary(mod_Zn)
-```
-- **Zinc (Zn)**  
-  - Bloque (F = 13.31, p = 0.00117) y niveles (F = 36.20, p < 0.001) significativos.  
-  - Variedades (F = 84.21, p < 0.001) e interacción (F = 6.75, p < 0.001).
-
-
-## 4. Supuestos de los modelos
-
-### 4.1 Normalidad de residuos
-
-```{r shapiro}
-mod_Mg$Within$residuals %>% shapiro.test()
-mod_Na$Within$residuals %>% shapiro.test()
-mod_Fe$Within$residuals %>% shapiro.test()
-mod_Cu$Within$residuals %>% shapiro.test()
-mod_Mn$Within$residuals %>% shapiro.test()
-mod_Zn$Within$residuals %>% shapiro.test()
-```
-
-**Interpretación**:  
-- Para Mg, W = 0.9084, p = 0.0102 < 0.05 → residuos no siguen normalidad estricta.  
-- Para Na y Zn, se cumple normalidad (p > 0.05).  
-- Fe, Cu y Mn cumplen también (cada p > 0.05).
-
-### 4.2 Homogeneidad de varianzas
-
-```{r bptest}
-bptest(residuals(mod_Mg$Within) ~ fitted(mod_Mg$Within), data = datos)
-bptest(residuals(mod_Na$Within) ~ fitted(mod_Na$Within), data = datos)
-bptest(residuals(mod_Fe$Within) ~ fitted(mod_Fe$Within), data = datos)
-bptest(residuals(mod_Cu$Within) ~ fitted(mod_Cu$Within), data = datos)
-bptest(residuals(mod_Mn$Within) ~ fitted(mod_Mn$Within), data = datos)
-bptest(residuals(mod_Zn$Within) ~ fitted(mod_Zn$Within), data = datos)
-```
-
-**Interpretación**:  
-- Todos los tests BP tienen p > 0.05, indicando varianzas homogéneas en los estratos subparcelas.
-
-## 5. Gráfico de medias y barras de error
+## 2. Gráficos
 
 ```{r plot-means}
 # Recodificar niveles como tratamiento con etiquetas
@@ -172,80 +91,210 @@ ggplot(summary_tbl, aes(x = Tratamiento, y = Media, color = Variedad, group = Va
 ```
 
 
-## 6. Comparaciones múltiples con Tukey
 
-### 6.1 Variedades
+# 3. Modelos
 
-```{r tukey-var}
-# b) Medias marginales de variedades (subplots) con Tukey
+```{r models}
+mod_Mg <- aov(Mg ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
 
-emm_Na_var <- emmeans(mod_Na, ~ Variedades)
-pairs(emm_Na_var, adjust = "tukey")
+```
 
-emm_Fe_var <- emmeans(mod_Fe, ~ Variedades)
-pairs(emm_Fe_var, adjust = "none")
+```{r models2}
+mod_Na <- aov(Na ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
 
-emm_Cu_var <- emmeans(mod_Cu, ~ Variedades)
-pairs(emm_Cu_var, adjust = "none")
+```
 
-emm_Mn_var <- emmeans(mod_Mn, ~ Variedades)
-pairs(emm_Mn_var, adjust = "none")
+```{r models3}
+mod_Fe <- aov(Fe ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
 
-emm_Zn_var <- emmeans(mod_Zn, ~ Variedades)
-pairs(emm_Zn_var, adjust = "none")
+```
+
+```{r models4}
+mod_Cu <- aov(Cu ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
+```
+
+```{r models5}
+mod_Mn <- aov(Mn ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
+```
+
+
+```{r models6}
+mod_Zn <- aov(Zn ~ repeticion + Error(parcela) + Variedades + niveles*Variedades, datos)
+```
+
+# 4. Supuestos
+
+## 4.1 Normalidad de errores
+
+```{r mode}
+mod_Mg$Within$residuals %>% shapiro.test()
+
+```
+
+```{r mode2}
+
+mod_Na$Within$residuals %>% shapiro.test()
+```
+
+
+```{r mode3}
+
+mod_Fe$Within$residuals %>% shapiro.test()
+
+```
+
+```{r mode4}
+
+mod_Cu$Within$residuals %>% shapiro.test()
+
+```
+
+```{r mode5}
+
+mod_Mn$Within$residuals %>% shapiro.test()
+
+```
+
+```{r mode6}
+mod_Zn$Within$residuals %>% shapiro.test()
 
 ```
 
 **Interpretación**:  
-- Na, Cu, Mn: todas las parejas difieren (Tahuaco > Blanca > Sajama).  
-- Fe: no hay diferencias.  
-- Zn: Sajama < {Blanca, Tahuaco}.
+- Para Mg, W = 0.9084, p = 0.0102 < 0.05 → residuos no siguen normalidad estricta.  
+- Para Na y Zn, se cumple normalidad (p > 0.05).  
+- Fe, Cu y Mn cumplen también (cada p > 0.05).
 
-### 6.2 Niveles
+## 4.2 Homogeneidad de varianzas
 
-```{r tukey-niv}
-emm_Na_niv <- emmeans(mod_Na, ~ niveles)
-pairs(emm_Na_niv, adjust = "tukey")
+```{r bptest}
+bptest(residuals(mod_Mg$Within) ~ fitted(mod_Mg$Within), data = datos)
+bptest(residuals(mod_Na$Within) ~ fitted(mod_Na$Within), data = datos)
+bptest(residuals(mod_Fe$Within) ~ fitted(mod_Fe$Within), data = datos)
+bptest(residuals(mod_Cu$Within) ~ fitted(mod_Cu$Within), data = datos)
+bptest(residuals(mod_Mn$Within) ~ fitted(mod_Mn$Within), data = datos)
+bptest(residuals(mod_Zn$Within) ~ fitted(mod_Zn$Within), data = datos)
+```
 
-emm_Fe_niv <- emmeans(mod_Fe, ~ niveles)
-pairs(emm_Fe_niv, adjust = "tukey")
+**Interpretación**:  
+- Todos los tests BP tienen p > 0.05, indicando varianzas homogéneas en los estratos subparcelas.
 
-emm_Cu_niv <- emmeans(mod_Cu, ~ niveles)
-pairs(emm_Cu_niv, adjust = "tukey")
 
-emm_Mn_niv <- emmeans(mod_Mn, ~ niveles)
-pairs(emm_Mn_niv, adjust = "tukey")
+# 5. Cuadros Anova para cada nutriente
+```{r model2}
+summary(mod_Na)
+```
+- **Sodio (Na)**  
+  - Bloque (F = 19.55, p = 0.000279) y niveles (F = 266.64, p < 0.001) altamente significativos.  
+  - Variedades (F = 148.80, p < 0.001) e interacción (F = 29.50, p < 0.001).  
+  La jerarquía de absorción es Tahuaco > Blanca de Juli > Sajama, y la respuesta a la fertilización varía según la variedad.
 
-emm_Zn_niv <- emmeans(mod_Zn, ~ niveles)
-pairs(emm_Zn_niv, adjust = "tukey")
+```{r model4}
+summary(mod_Cu)
+```
+- **Cobre (Cu)**  
+  - Bloque (F = 21.55, p = 0.000191) y niveles (F = 141.22, p < 0.001) significativos.  
+  - Variedades (F = 92.96, p < 0.001) e interacción (F = 4.15, p = 0.0053).  
 
+```{r model5}
+summary(mod_Mn)
+```
+- **Manganeso (Mn)**  
+  - Bloque (F = 20.61, p = 0.000227) y niveles (F = 175.62, p < 0.001) significativos.  
+  - Variedades (F = 225.60, p < 0.001) e interacción (F = 11.10, p < 0.001).
+```{r model6}
+summary(mod_Zn)
+```
+- **Zinc (Zn)**  
+  - Bloque (F = 13.31, p = 0.00117) y niveles (F = 36.20, p < 0.001) significativos.  
+  - Variedades (F = 84.21, p < 0.001) e interacción (F = 6.75, p < 0.001).
+
+
+
+# 5. Comparaciones múltiples con Tukey
+
+## 5.1 Según variedades
+
+```{r tukey-var1}
+emm_Na_var <- emmeans(mod_Na, ~ Variedades)
+cld(emm_Na_var, Letters = letters, adjust = "tukey")
+```
+A un nivel de significancia de 0.05, las comparaciones múltiples con ajuste Tukey mostraron que Sajama (media ≈1807) absorbe significativamente menos sodio que Blanca de Juli (≈3387) y Tahuaco (≈3640), con p-valores <0.05 para ambos contrastes frente a Sajama. En cambio, Blanca de Juli y Tahuaco no difieren entre sí (p > 0.05). En conclusión, Sajama retiene menos Na, mientras que Blanca de Juli y Tahuaco tienen una absorción estadísticamente equivalente y superior a Sajama.
+
+
+```{r tukey-var3}
+
+emm_Cu_var <- emmeans(mod_Cu, ~ Variedades)
+cld(emm_Cu_var, Letters = letters, adjust = "tukey")
+```
+A un nivel de significancia de 0.05, las comparaciones múltiples con ajuste Tukey mostraron que:
+
+Sajama (media ≈ 33.6) absorbe significativamente menos Cu que Blanca de Juli (≈ 42.9) y Tahuaco (≈ 46.1), con p-valores < 0.05 para ambos contrastes frente a Sajama.
+
+Blanca de Juli absorbe a su vez menos Cu que Tahuaco (p < 0.05).
+
+En conclusión, la variedad Tahuaco es la que más cobre absorbe, seguida de Blanca de Juli, mientras que Sajama es la que menos absorción presenta.
+```{r tukey-var4}
+
+emm_Mn_var <- emmeans(mod_Mn, ~ Variedades)
+cld(emm_Mn_var, Letters = letters, adjust = "tukey")
+```
+A un nivel de significancia de 0.05, las comparaciones múltiples con ajuste Tukey mostraron que:
+
+Sajama (media ≈ 269) absorbe significativamente menos manganeso que Blanca de Juli (≈ 411) y Tahuaco (≈ 435), con p-valores < 0.05 en ambos casos.
+
+Blanca de Juli absorbe a su vez menos que Tahuaco (p < 0.05).
+
+En conclusión, la variedad Tahuaco es la que más manganeso absorbe, seguida de Blanca de Juli, mientras que Sajama presenta la absorción más baja.
+```{r tukey-var5}
+
+emm_Zn_var <- emmeans(mod_Zn, ~ Variedades)
+cld(emm_Zn_var, Letters = letters, adjust = "tukey")
 
 ```
+
+A un nivel de significancia de 0.05, las comparaciones múltiples con ajuste Tukey mostraron que:
+
+Sajama (media ≈ 106) absorbe significativamente menos Zn que Blanca de Juli (≈ 149) y Tahuaco (≈ 143), con p-valores < 0.05 para ambos contrastes frente a Sajama.
+
+Blanca de Juli y Tahuaco no difieren entre sí (ambas comparten el grupo “b”, p > 0.05).
+
+En conclusión, Blanca de Juli y Tahuaco son las variedades con mayor absorción de Zn y estadísticamente equivalentes, mientras que Sajama presenta la absorción más baja.
+
 
 **Interpretación**:  
 - Na y Fe: cada salto de nivel es significativo (4 > 3 > 2 > 1).  
 - Cu y Mn: suben hasta nivel 3 y se estancan (3 ≈ 4).  
 - Zn: gran salto 1→2 y luego meseta (2 ≈ 3 ≈ 4).
 
-### 6.3 Interacción
+## 5.2 Según interacción
 
-```{r tukey-int}
+```{r tukey-int1}
 emm_Na_int <- emmeans(mod_Na, ~ niveles*Variedades)
-pairs(emm_Na_int, adjust = "tukey")
-
-emm_Fe_int <- emmeans(mod_Fe, ~ niveles*Variedades)
-pairs(emm_Fe_int, adjust = "tukey")
 
 emm_Cu_int <- emmeans(mod_Cu, ~ niveles*Variedades)
-pairs(emm_Cu_int, adjust = "tukey")
 
 emm_Mn_int <- emmeans(mod_Mn, ~ niveles*Variedades)
-pairs(emm_Mn_int, adjust = "tukey")
 
 emm_Zn_int <- emmeans(mod_Zn, ~ niveles*Variedades)
-pairs(emm_Zn_int, adjust = "tukey")
+
+
+
+cld(emm_Na_int, Letters = letters, adjust = "tukey")
 
 ```
+A un nivel de significancia de 0.05, las mejores combinaciones fueron D3 (90–60–45) en Tahuaco y D4 (120–80–60) en Blanca de Juli, que resultaron estadísticamente equivalentes y con medias de Na significativamente mayores que el resto.
 
-**Interpretación**:  
-- Confirma que cada variedad difiere en su respuesta a niveles, p.ej., Sodio: Tahuaco pico en nivel 3, Blanca pico en 4, Sajama crece linealmente.
+```{r tukey-int3}
+cld(emm_Cu_int, Letters = letters, adjust = "tukey")
+```
+A un nivel de significancia de 0.05, las comparaciones Tukey de la interacción niveles×Variedades para cobre mostraron que las cuatro combinaciones con mayor absorción —D3 (90–60–45 kg/ha) en Blanca de Juli (≈51.2 mg), D4 (120–80–60) en Blanca de Juli (≈51.4 mg), D3 en Tahuaco (≈55.0 mg) y D4 en Tahuaco (≈57.7 mg)— no difieren significativamente entre sí (todas comparten la letra “g”). En consecuencia, cualquiera de estas cuatro opciones es estadísticamente óptima para maximizar la absorción de Cu.
+```{r tukey-int4}
+cld(emm_Mn_int, Letters = letters, adjust = "tukey", alpha =0.05)
+```
+A un nivel de significancia de 0.05, las comparaciones Tukey de la interacción niveles×Variedades para manganeso mostraron que las cuatro combinaciones con absorción más alta —D4 (120–80–60) en Blanca de Juli (≈511 mg), D3 (90–60–45) en Blanca de Juli (≈520 mg), D4 en Tahuaco (≈532 mg) y D3 en Tahuaco (≈563 mg)— comparten la letra “f” y, por tanto, no difieren significativamente entre sí. En consecuencia, cualquiera de estas cuatro opciones es estadísticamente óptima para maximizar la absorción de Mn.
+```{r tukey-int5}
+cld(emm_Zn_int, Letters = letters, adjust = "tukey")
+
+```
+A un nivel de significancia de 0.05, las comparaciones Tukey de la interacción niveles×Variedades para Zn mostraron que las cinco combinaciones con absorción más alta —D2 (60–40–30) en Blanca de Juli (≈173.2 mg), D3 (90–60–45) en Blanca de Juli (≈173.0 mg), D4 (120–80–60) en Blanca de Juli (≈156.0 mg), D3 en Tahuaco (≈156.8 mg) y D4 en Tahuaco (≈173.0 mg)— comparten la letra “f” (o la incluyen, como “ef”/“def”) y, por tanto, no difieren significativamente entre sí. En consecuencia, cualquiera de estas cinco combinaciones es estadísticamente óptima para maximizar la absorción de Zn.
